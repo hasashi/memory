@@ -1,4 +1,4 @@
-#7,5 Std
+#8,5 Std
 
 # Importieren u. initialisieren der Pygame-Bibliothek
 import pygame
@@ -20,6 +20,7 @@ BUTTTON_CLICK_OFFSET = 3
 W = BACKGROUND_CARD.get_rect().width * MAP_WIDTH + EDGE * MAP_WIDTH + EDGE
 H = BACKGROUND_CARD.get_rect().height * MAP_HEIGHT + EDGE * MAP_HEIGHT + EDGE + FONTSIZE
 shown_cards = 0
+game_over = True
 
 # für Textausgabe
 font = pygame.font.Font(None, FONTSIZE)
@@ -64,7 +65,6 @@ while True:
                 for icon in icons:
                     if icon["sprite"].collidepoint(pos) and not icon["match"]:
                         if selected_sprite != icon["sprite"]:
-                            print("different")
                             if shown_cards == 0:
                                 icon["hidden"] = False
                                 selected_card = icon["icon_num"]
@@ -77,7 +77,6 @@ while True:
                             elif shown_cards == 1:
                                 # Check if other card has same icon_num
                                 if icon["icon_num"] == selected_card:
-                                    print("Match")
                                     icon["match"] = True
                                     for j in icons:
                                         if j["icon_num"] == icon["icon_num"] :
@@ -86,43 +85,57 @@ while True:
                                         shown_cards = 0
                                         selected_card = 0
                                         selected_sprite = None
-                                        match = True
                                 else:      
                                     icon["hidden"] = False    
                                     shown_cards = shown_cards + 1
 
     # Spiellogik
+    matchcount = 0
+    for icon in icons:
+        if icon["match"]:
+            matchcount = matchcount + 1
+
+    if matchcount == len(icons):
+        game_over = True
 
     # Spielfeld löschen
     fenster.fill(BLACK)
 
     # Spielfeld/figuren zeichnen
-    if selected_card == 0:
-        selected_card = ""
-
+    if game_over:
+        inhalt2 = "Game Over!"
+        text2 = font.render(inhalt2, 1, WHITE)
+        fenster.blit(text2, (W / 2 - text2.get_width() / 2, H / 2 - text2.get_height() / 2))
+        
     else:
-        inhalt = "Card selected: {}".format(selected_card)
-        text = font.render(inhalt, 1, WHITE)
-        fenster.blit(text, (20,20))
+        if selected_card == 0:
+            selected_card = ""
 
-    image_count = 0
-    for x in range(MAP_WIDTH):
-        for y in range(MAP_HEIGHT):
-            if not icons[image_count]["match"]:                
-                if icons[image_count]["hidden"]:
-                    sprite = fenster.blit(COVER_CARD, (EDGE + BACKGROUND_CARD.get_rect().width * x + EDGE * x ,
-                    EDGE + BACKGROUND_CARD.get_rect().height * y + EDGE * y + FONTSIZE))
+        else:
+            inhalt = "Card selected: {}".format(selected_card)
+            text = font.render(inhalt, 1, WHITE)
+            fenster.blit(text, (20,20))
 
-                else:
-                    sprite = fenster.blit(BACKGROUND_CARD, (EDGE + BACKGROUND_CARD.get_rect().width * x + EDGE * x + BUTTTON_CLICK_OFFSET,
-                    EDGE + BACKGROUND_CARD.get_rect().height * y + EDGE * y + FONTSIZE + BUTTTON_CLICK_OFFSET))
+        
 
-                    fenster.blit(icons[image_count]["surface"], (EDGE + ((BACKGROUND_CARD.get_rect().width - icons[image_count]["surface"].get_rect().width) / 2) + BACKGROUND_CARD.get_rect().width * x + EDGE * x + BUTTTON_CLICK_OFFSET,
-                    EDGE + (BACKGROUND_CARD.get_rect().height - icons[image_count]["surface"].get_rect().height) / 2 + BACKGROUND_CARD.get_rect().height * y + EDGE * y + FONTSIZE + BUTTTON_CLICK_OFFSET))
+        image_count = 0
+        for x in range(MAP_WIDTH):
+            for y in range(MAP_HEIGHT):
+                if not icons[image_count]["match"]:                
+                    if icons[image_count]["hidden"]:
+                        sprite = fenster.blit(COVER_CARD, (EDGE + BACKGROUND_CARD.get_rect().width * x + EDGE * x ,
+                        EDGE + BACKGROUND_CARD.get_rect().height * y + EDGE * y + FONTSIZE))
 
-                icons[image_count]["sprite"] = sprite
+                    else:
+                        sprite = fenster.blit(BACKGROUND_CARD, (EDGE + BACKGROUND_CARD.get_rect().width * x + EDGE * x + BUTTTON_CLICK_OFFSET,
+                        EDGE + BACKGROUND_CARD.get_rect().height * y + EDGE * y + FONTSIZE + BUTTTON_CLICK_OFFSET))
 
-            image_count = image_count + 1
+                        fenster.blit(icons[image_count]["surface"], (EDGE + ((BACKGROUND_CARD.get_rect().width - icons[image_count]["surface"].get_rect().width) / 2) + BACKGROUND_CARD.get_rect().width * x + EDGE * x + BUTTTON_CLICK_OFFSET,
+                        EDGE + (BACKGROUND_CARD.get_rect().height - icons[image_count]["surface"].get_rect().height) / 2 + BACKGROUND_CARD.get_rect().height * y + EDGE * y + FONTSIZE + BUTTTON_CLICK_OFFSET))
+
+                    icons[image_count]["sprite"] = sprite
+
+                image_count = image_count + 1
 
     # Fenster aktualisieren
     pygame.display.flip()
