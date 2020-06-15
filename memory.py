@@ -20,7 +20,7 @@ BUTTTON_CLICK_OFFSET = 3
 W = BACKGROUND_CARD.get_rect().width * MAP_WIDTH + EDGE * MAP_WIDTH + EDGE
 H = BACKGROUND_CARD.get_rect().height * MAP_HEIGHT + EDGE * MAP_HEIGHT + EDGE + FONTSIZE
 shown_cards = 0
-game_over = True
+game_over = False
 
 # für Textausgabe
 font = pygame.font.Font(None, FONTSIZE)
